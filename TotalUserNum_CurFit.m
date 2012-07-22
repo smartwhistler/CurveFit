@@ -19,13 +19,16 @@ ylabel('Num of Total User')
 hold on
 
 % DayThStd = (DayTh-mean(DayTh))./std(DayTh);
-Paras = polyfit(DayTh, TtlUsrNum, Degree);
-FitTime = polyval(Paras, Time);
-FitDayTh = polyval(Paras, DayTh);
+[Paras, Struct] = polyfit(DayTh, TtlUsrNum, Degree);
+% 
+[FitTime, Delta] = polyval(Paras, Time, Struct);
+% FitDayTh = polyval(Paras, DayTh);
 plot(Time, FitTime, 'color', 'r')
 legend('Standard ', 'Fitted', 'Location', 'NorthWest')
 grid on
-
+figure(2)
+plot(Delta)
+% 
 % Sum of Squared Error(平方差和):
 SSE = sum((FitDayTh-TtlUsrNum).^2);
 str = sprintf('SSE(平方差和)为：%.10e', SSE);
@@ -38,7 +41,7 @@ disp(str)
 RMSE = sqrt(MSE);
 str = sprintf('RMSE(均方根误差)为：%.10e', RMSE);
 disp(str)
-% Sum of Squares of the Regression(预测数据与原始数据均值之差的平方和):
+% Sum of Squares of the Regression(预测数据与原始数据均值之差的平方和,即残差或剩余误差的平方和):
 SSR = sum( (FitDayTh - (sum(TtlUsrNum)/n)).^2 );
 str = sprintf('SSR(预测数据与原始数据均值之差的平方和)为：%.10e', SSR);
 disp(str)
