@@ -1,5 +1,5 @@
 % 注意, 执行脚本时请修改第6行的参数指向对应的数据文件！！
-clear, clc, close all;
+clear, clc;
 format long;
 warning off MATLAB:polyfit:RepeatedPointsOrRescale;
 % 待处理的数据文件:
@@ -23,7 +23,9 @@ DegreeMax = 9;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:
 % 可调小此值，以打印所有情况。
 R_SquareMin = 0.9999;
-Left = 10; Bottom = 160;
+% 相对误差允许的最大值：
+RelErrMax = 1000;
+Left = 50;
 
 str = sprintf('将依次用 2阶～%d阶的多项式 拟合用户总数随时间变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
 disp(str)
@@ -33,6 +35,13 @@ for Degree = 2:DegreeMax
 	[Paras, Struct] = polyfit(DayTh, TtlUsrNum, Degree);
 	FitTime = polyval(Paras, Time);
 	FitDayTh = polyval(Paras, DayTh);
+    % 计算相对误差:
+    RelErr = 100*abs(TtlUsrNum-FitDayTh)./TtlUsrNum;
+    for i = 1:length(RelErr)
+        if(RelErr(i)>RelErrMax)
+            RelErr(i) = RelErrMax;
+        end
+    end
 
 	% 计算误差:
 	% Sum of Squared Error(平方差和):
@@ -52,18 +61,27 @@ for Degree = 2:DegreeMax
 	% 做图并自动保存到本地
 	if(R_Square > R_SquareMin)
 		str = sprintf('多项式阶数为%d, R_Square为%.10f', Degree, R_Square);
-		Handle = figure('name', str, 'position', [Left, Bottom, 750, 500]);
-		Left = Left+120; Bottom = Bottom-30;
-		plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
+		Handle = figure('name', str, 'position', [Left, 0, 750, 750]);
+		Left = Left+120;
+        % 绘制拟合曲线随时间变化的图形：
+		subplot(2, 1, 1); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
 		str = sprintf('Polynomial Fitting the Num of Total User(Degree=%d, RSquare=%.10f)', Degree, R_Square);
 		title(str)
 		xlabel('Time(Day)')
 		ylabel('Num of Total User')
-		text(35, 65*10^6, strcat('y =', poly2str(Paras, 'x')));
+		text(20, 6*10^7, strcat('y =', poly2str(Paras, 'x')));
 		hold on
-		plot(Time, FitTime, 'color', 'r')
+        plot(Time, FitTime, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
-		grid on
+        grid on
+        % 绘制拟合函数与真实值的相对误差随时间变化的图形:
+        subplot(2, 1, 2);
+        plot(DayTh, RelErr, 'color', 'r')
+        str = sprintf('Relative Error(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
+        title(str)
+        xlabel('Time(Day)')
+		ylabel('Relative Error(%)')
+        % 保存图片到文件
 		str = sprintf('TotalUsrNum_PolyFit_Deg-%d', Degree);
 		saveas(Handle, str, 'fig')  % Matlab格式
 		saveas(Handle, str, 'epsc')  % 矢量图
