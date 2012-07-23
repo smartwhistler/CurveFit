@@ -14,7 +14,7 @@ else
 	return
 end
 n = length(TtlUsrNum);
-DataFrom = 1;
+DataFrom = 200;
 DataTo = 638;
 str = sprintf('从文件 %s 中获取了 %d 个数据, 取其中的 第%d天到第%d天 的数据进行拟合.', DataFile, n, DataFrom, DataTo);
 disp(str)
@@ -27,7 +27,7 @@ Time = 0:0.001:n;
 DegreeMax = 9;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:
 % 可调小此值，以打印所有情况。
-R_SquareMin = 0.999;
+R_SquareMin = 0.99;
 % 相对误差允许的最大值：
 RelErrMax = 1000;
 Left = 60;
@@ -47,7 +47,7 @@ for Degree = 2:DegreeMax
             RelErr(i) = RelErrMax;
         end
     end
-    
+
     % 取总数据的前0.618部分参与拟合:
     DayThGldSct_Left = 1:ceil(n*0.618);
     DayThGldSct_Right = (length(DayThGldSct_Left)+1):n;
@@ -65,7 +65,7 @@ for Degree = 2:DegreeMax
             RelErrGldSct(i) = RelErrMax;
         end
     end
-    
+
 	% 计算误差:
 	% Sum of Squared Error(平方差和):
 	SSE = sum((FitDayTh-TtlUsrNum).^2);
@@ -108,39 +108,42 @@ for Degree = 2:DegreeMax
 		Left = Left+30;
         % 绘制 拟合曲线：
 		subplot(2, 2, 1); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
-		str = sprintf('Polynomial Fitting the Num of Total User(Degree=%d, RSquare=%.10f)', Degree, R_Square);
+		str = sprintf('Poly Fitting the Num of Ttl Usr(RSquare=%.10f)', R_Square);
 		title(str)
 		xlabel('Time(Day)')
 		ylabel('Num of Total User')
-		text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
+		% text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
 		hold on
         plot(Time, FitTime, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
         grid on
         % 绘制拟合函数与真实值的 相对误差 随时间变化的曲线:
         subplot(2, 2, 3); plot(DayTh, RelErr, 'color', 'r')
-        str = sprintf('Relative Error(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
+        str = sprintf('Relative Err(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
         xlabel('Time(Day)')
 		ylabel('Relative Error(%)')
         % 取总数据的前0.618部分参与拟合，生成的 拟合曲线:
         subplot(2, 2, 2); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
-		str = sprintf('Polynomial of Gold Section Fitting the Num of Total User(Degree=%d, RSquareGldSct_Right=%.10f)', Degree, R_SquareGldSct_Right);
+		str = sprintf('Poly of GldSct Fitting Num of Ttl Usr(RSquareGldSctRight=%.7f)', R_SquareGldSct_Right);
 		title(str)
 		xlabel('Time(Day)')
 		ylabel('Num of Total User')
-		text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
+		% text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
         hold on
         plot(Time, FitTimeGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
+        hold on
+        plot([length(DayThGldSct_Left), length(DayThGldSct_Left)], [0, max(TtlUsrNumGldSct_Right)], 'color', 'r');
+        text(length(DayThGldSct_Left)-40, max(TtlUsrNumGldSct_Right)/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
         subplot(2, 2, 4); plot(DayTh, RelErrGldSct, 'color', 'r')
-        str = sprintf('Relative Error of Gold Section Curving(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
+        str = sprintf('Relative Err of GldSct Curving(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
         xlabel('Time(Day)')
 		ylabel('Relative Error(%)')
-        
+
         % 保存图片到文件
 		str = sprintf('TotalUsrNum_%d_%d_PolyFit_Deg-%d', DataFrom, DataTo, Degree);
 		saveas(Handle, str, 'fig')  % Matlab格式
@@ -165,6 +168,48 @@ for Degree = 2:DegreeMax
 	disp(str)
 	str = sprintf('R-Square(确定系数,表征拟合的好坏,越接近1越好)为：%.10e', R_Square);
 	disp(str)
-	str = sprintf('\n');
+    disp('----------------------------')
+    str = sprintf('当取总数据的前0.618部分参与拟合时：\n  拟合的多项式为:\ny =%s', poly2str(ParasGldSct, 'x'));
+    disp(str)
+    disp('黄金分割线左边的情况是：')
+    str = sprintf('SSE_GldSct_Left(平方差和)为：%.10e', SSE_GldSct_Left);
+	disp(str)
+	str = sprintf('MSE_GldSct_Left(均方差)为：%.10e', MSE_GldSct_Left);
+	disp(str)
+	str = sprintf('RMSE_GldSct_Left(均方根误差)为：%.10e', RMSE_GldSct_Left);
+	disp(str)
+	str = sprintf('SSR_GldSct_Left(预测数据与原始数据均值之差的平方和)为：%.10e', SSR_GldSct_Left);
+	disp(str)
+	str = sprintf('SST_GldSct_Left(原始数据和均值之差的平方和)为：%.10e', SST_GldSct_Left);
+	disp(str)
+	str = sprintf('R-SquareGldSct_Left(确定系数,表征拟合的好坏,越接近1越好)为：%.10e', R_SquareGldSct_Left);
+    disp(str)
+    disp('黄金分割线右边的情况是：')
+    str = sprintf('SSE_GldSct_Right(平方差和)为：%.10e', SSE_GldSct_Right);
+	disp(str)
+	str = sprintf('MSE_GldSct_Right(均方差)为：%.10e', MSE_GldSct_Right);
+	disp(str)
+	str = sprintf('RMSE_GldSct_Right(均方根误差)为：%.10e', RMSE_GldSct_Right);
+	disp(str)
+	str = sprintf('SSR_GldSct_Right(预测数据与原始数据均值之差的平方和)为：%.10e', SSR_GldSct_Right);
+	disp(str)
+	str = sprintf('SST_GldSct_Right(原始数据和均值之差的平方和)为：%.10e', SST_GldSct_Right);
+	disp(str)
+	str = sprintf('R-SquareGldSct_Right(确定系数,表征拟合的好坏,越接近1越好)为：%.10e', R_SquareGldSct_Right);
+    disp(str)
+    disp('总体的情况是：')
+    str = sprintf('SSE_GldSct_All(平方差和)为：%.10e', SSE_GldSct_All);
+	disp(str)
+	str = sprintf('MSE_GldSct_All(均方差)为：%.10e', MSE_GldSct_All);
+	disp(str)
+	str = sprintf('RMSE_GldSct_All(均方根误差)为：%.10e', RMSE_GldSct_All);
+	disp(str)
+	str = sprintf('SSR_GldSct_All(预测数据与原始数据均值之差的平方和)为：%.10e', SSR_GldSct_All);
+	disp(str)
+	str = sprintf('SST_GldSct_All(原始数据和均值之差的平方和)为：%.10e', SST_GldSct_All);
+	disp(str)
+	str = sprintf('R-SquareGldSct_All(确定系数,表征拟合的好坏,越接近1越好)为：%.10e', R_SquareGldSct_All);
+    disp(str)
+    str = sprintf('===========================================================\n\n');
 	disp(str)
 end
