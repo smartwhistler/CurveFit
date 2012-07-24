@@ -143,8 +143,8 @@ for Degree = 2:DegreeMax
         plot(Time+DataFrom, FitTimeGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
-        plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(TtlUsrNumGldSct_Right)], 'color', 'r');
-        text(length(DayThGldSct_Left)-40+DataFrom, max(TtlUsrNumGldSct_Right)/2, 'Golden Section')
+        plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(abs(FitDayThGldSct_Right))], 'color', 'r');
+        text(length(DayThGldSct_Left)-40+DataFrom, max(abs(FitDayThGldSct_Right))/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
         subplot(2, 3, 5); plot(DayTh+DataFrom, RelErrGldSct, 'color', 'r')
@@ -172,11 +172,13 @@ for Degree = 2:DegreeMax
         title('The Fited Poly Function:')
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
+%{        
         % 保存图片到文件
 		str = sprintf('TotalUsrNum_%d_%d_PolyFit_Deg-%d_Ver2', DataFrom, DataTo, Degree);
 		saveas(Handle, str, 'fig')  % Matlab格式
 		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
+%}
     end
 
     

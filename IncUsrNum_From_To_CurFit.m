@@ -3,7 +3,7 @@ clear, clc;
 format long;
 warning off MATLAB:polyfit:RepeatedPointsOrRescale;
 % 待处理的数据文件:
-DataFile = '~/Documents/CurveFit/TotalUserNum_Sp.dat';
+DataFile = '~/Documents/CurveFit/IncUserNum_Sp.dat';
 if((exist(DataFile, 'file'))==2)
 	TtlUsrNum = load(DataFile);
 	[PathStr, Name, Ext] = fileparts(DataFile);
@@ -14,7 +14,7 @@ else
 	return
 end
 n = length(TtlUsrNum);
-DataFrom = 200;
+DataFrom = 1;
 DataTo = 638;
 str = sprintf('从文件 %s 中获取了 %d 个数据, 取其中的 第%d天到第%d天 的数据进行拟合.', DataFile, n, DataFrom, DataTo);
 disp(str)
@@ -24,10 +24,10 @@ TtlUsrNum = TtlUsrNum(DataFrom:DataTo);
 DayTh = 1:n;
 Time = 0:0.001:n;
 % 多项式拟合的最大阶数:
-DegreeMax = 9;
+DegreeMax = 5;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:
 % 可调小此值，以打印所有情况。
-R_SquareMin = 0.99;
+R_SquareMin = 0.5;
 % 相对误差允许的最大值：
 RelErrMax = 1000;
 Left = 60;
@@ -35,7 +35,7 @@ Left = 60;
 str = sprintf('将依次用 2阶～%d阶的多项式 拟合用户总数随时间变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
 disp(str)
 for Degree = 2:DegreeMax
-	% 多项式拟合曲线:
+	% 1. 多项式拟合曲线:
 	% DayThStd = (DayTh-mean(DayTh))./std(DayTh);
 	[Paras, Struct] = polyfit(DayTh, TtlUsrNum, Degree);
 	FitTime = polyval(Paras, Time);
@@ -48,7 +48,7 @@ for Degree = 2:DegreeMax
         end
     end
 
-    % 取总数据的前0.618部分参与拟合:
+    % 2. 取总数据的前0.618部分参与拟合:
     DayThGldSct_Left = 1:ceil(n*0.618);
     DayThGldSct_Right = (length(DayThGldSct_Left)+1):n;
     TtlUsrNumGldSct_Left = TtlUsrNum(1:length(DayThGldSct_Left));
@@ -66,7 +66,12 @@ for Degree = 2:DegreeMax
         end
     end
 
-	% 计算误差:
+    % 3. 将全部数据参与拟合获得拟合函数，并作为黄金分割的前0.618部分，相对拟合函数的后0.382部分作为对将来的预测值
+    Time_PrevFollowed = 0:0.001:n/0.618;
+    FitTime_PrevFollowed = polyval(Paras, Time_PrevFollowed);
+
+
+	% 1. 计算误差:
 	% Sum of Squared Error(平方差和):
 	SSE = sum((FitDayTh-TtlUsrNum).^2);
 	% Mean Squared Error(均方差):
@@ -80,8 +85,8 @@ for Degree = 2:DegreeMax
 	SST = sum( (TtlUsrNum - (sum(TtlUsrNum)/n)).^2 );
 	% R_Square(确定系数,表征拟合的好坏,越接近1越好):
 	R_Square = SSR/SST;
-    
-    % 计算取总数据的前0.618部分参与拟合时的误差:
+
+    % 2. 计算取总数据的前0.618部分参与拟合时的误差:
     SSE_GldSct_Left = sum((FitDayThGldSct_Left-TtlUsrNumGldSct_Left).^2);
     SSE_GldSct_Right = sum((FitDayThGldSct_Right-TtlUsrNumGldSct_Right).^2);
     SSE_GldSct_All = sum((FitDayThGldSct-TtlUsrNum).^2);
@@ -100,58 +105,85 @@ for Degree = 2:DegreeMax
     R_SquareGldSct_Left = SSR_GldSct_Left/SST_GldSct_Left;
     R_SquareGldSct_Right = SSR_GldSct_Right/SST_GldSct_Right;
     R_SquareGldSct_All = SSR_GldSct_All/SST_GldSct_All;
-    
+
+    % 3. 将全部数据参与拟合获得的拟合函数的误差计算与（ 1. ）相同，略。
+
+
 	% 做图并自动保存到本地
-	if(R_Square > R_SquareMin)
+    if(R_Square > R_SquareMin)
 		str = sprintf('多项式阶数为%d, R_Square为%.10f', Degree, R_Square);
-		Handle = figure('name', str, 'position', [Left, 0, 1400, 750]);
+		Handle = figure('name', str, 'position', [Left, 0, 1450, 750]);
 		Left = Left+30;
-        % 绘制 拟合曲线：
-		subplot(2, 2, 1); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
-		str = sprintf('Poly Fitting the Num of Ttl Usr(RSquare=%.10f)', R_Square);
+        % 1. 绘制 拟合曲线：
+		subplot(2, 3, 1); plot(DayTh+DataFrom, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+		str = sprintf('Poly Fitting the Num of Ttl Usr\n(RSquare=%.10f)', R_Square);
 		title(str)
-		xlabel('Time(Day)')
+		xlabel('Time(DayTh)')
 		ylabel('Num of Total User')
 		% text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
 		hold on
-        plot(Time, FitTime, 'color', 'r')
+        plot(Time+DataFrom, FitTime, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
         grid on
         % 绘制拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 2, 3); plot(DayTh, RelErr, 'color', 'r')
-        str = sprintf('Relative Err(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
+        subplot(2, 3, 4); plot(DayTh+DataFrom, RelErr, 'color', 'r')
+        str = sprintf('Relative Err\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
-        xlabel('Time(Day)')
+        xlabel('Time(DayTh)')
 		ylabel('Relative Error(%)')
-        % 取总数据的前0.618部分参与拟合，生成的 拟合曲线:
-        subplot(2, 2, 2); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
-		str = sprintf('Poly of GldSct Fitting Num of Ttl Usr(RSquareGldSctRight=%.7f)', R_SquareGldSct_Right);
+
+        % 2. 取总数据的前0.618部分参与拟合，生成的 拟合曲线:
+        subplot(2, 3, 2); plot(DayTh+DataFrom, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+		str = sprintf('Poly of GldSct Fitting Num of Ttl Usr\n(RSquareGldSctRight=%.7f)', R_SquareGldSct_Right);
 		title(str)
-		xlabel('Time(Day)')
+		xlabel('Time(DayTh)')
 		ylabel('Num of Total User')
 		% text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
         hold on
-        plot(Time, FitTimeGldSct, 'color', 'r');
+        plot(Time+DataFrom, FitTimeGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
-        plot([length(DayThGldSct_Left), length(DayThGldSct_Left)], [0, max(TtlUsrNumGldSct_Right)], 'color', 'r');
-        text(length(DayThGldSct_Left)-40, max(TtlUsrNumGldSct_Right)/2, 'Golden Section')
+        plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(abs(FitDayThGldSct))], 'color', 'r');
+        text(length(DayThGldSct_Left)-40+DataFrom, max(abs(FitDayThGldSct))/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 2, 4); plot(DayTh, RelErrGldSct, 'color', 'r')
-        str = sprintf('Relative Err of GldSct Curving(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
+        subplot(2, 3, 5); plot(DayTh+DataFrom, RelErrGldSct, 'color', 'r')
+        hold on
+        plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(RelErrGldSct)], 'color', 'r');
+        text(length(DayThGldSct_Left)-40+DataFrom, max(RelErrGldSct)/2, 'Golden Section')
+        str = sprintf('Relative Err of GldSct Curving\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
-        xlabel('Time(Day)')
+        xlabel('Time(DayTh)')
 		ylabel('Relative Error(%)')
 
+        % 3. 将全部数据参与拟合，并作为黄金分割的前0.618部分，相对的后0.382部分作为预测曲线：
+        subplot(2, 3, 3); plot(DayTh+DataFrom, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+        title('Preview');
+        xlabel('Time(DayTh)')
+        ylabel('Num of Total User')
+        hold on
+        plot(Time_PrevFollowed+DataFrom, FitTime_PrevFollowed, 'color', 'r')
+        legend('Standard ', 'Preview Followed', 'Location', 'NorthWest')
+        hold on
+        plot([n+DataFrom, n+DataFrom], [0, max(FitTime_PrevFollowed)], 'color', 'r')
+        text(n-50+DataFrom, max(FitTime_PrevFollowed)/2, 'Golden Section')
+        grid on
+        subplot(2, 3, 6);
+        title('The Fited Poly Function:')
+        text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
+
+%{
         % 保存图片到文件
-		str = sprintf('TotalUsrNum_%d_%d_PolyFit_Deg-%d', DataFrom, DataTo, Degree);
+		str = sprintf('IncUsrNum_%d_%d_PolyFit_Deg-%d_Ver2', DataFrom, DataTo, Degree);
 		saveas(Handle, str, 'fig')  % Matlab格式
 		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
-	end
+%}
+    end
+
 
 	% 打印误差
+    % 1. 
 	str = sprintf('%d阶多项式拟合的误差分析：', Degree);
 	disp(str)
 	str = sprintf('拟合的%d阶多项式为:\ny =%s', Degree, poly2str(Paras, 'x'));
@@ -169,6 +201,8 @@ for Degree = 2:DegreeMax
 	str = sprintf('R-Square(确定系数,表征拟合的好坏,越接近1越好)为：%.10e', R_Square);
 	disp(str)
     disp('----------------------------')
+    
+    % 2. 
     str = sprintf('当取总数据的前0.618部分参与拟合时：\n  拟合的多项式为:\ny =%s', poly2str(ParasGldSct, 'x'));
     disp(str)
     disp('黄金分割线左边的情况是：')
