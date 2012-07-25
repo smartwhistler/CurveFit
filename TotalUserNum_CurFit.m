@@ -19,15 +19,15 @@ disp(str)
 DayTh = 1:n;
 Time = 0:0.001:n;
 % 多项式拟合的最大阶数:
-DegreeMax = 9;
+DegreeMax = 6;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:
 % 可调小此值，以打印所有情况。
-R_SquareMin = 0.9999;
+R_SquareMin = 0.9;
 % 相对误差允许的最大值：
 RelErrMax = 1000;
 Left = 60;
 
-str = sprintf('将依次用 2阶～%d阶的多项式 拟合用户总数随时间变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
+str = sprintf('将依次用 2阶～%d阶的多项式 拟合用户总数随时间（以天为单位）变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
 disp(str)
 for Degree = 2:DegreeMax
 	% 多项式拟合曲线:
@@ -67,7 +67,7 @@ for Degree = 2:DegreeMax
 		subplot(2, 1, 1); plot(DayTh, TtlUsrNum, '.', 'color', 'b', 'MarkerSize', 3)
 		str = sprintf('Polynomial Fitting the Num of Total User(Degree=%d, RSquare=%.10f)', Degree, R_Square);
 		title(str)
-		xlabel('Time(Day)')
+		xlabel('Time(Day As Unit)')
 		ylabel('Num of Total User')
 		text(10, 6*10^7, strcat('y=', poly2str(Paras, 'x')));
 		hold on
@@ -78,12 +78,13 @@ for Degree = 2:DegreeMax
         subplot(2, 1, 2); plot(DayTh, RelErr, 'color', 'r')
         str = sprintf('Relative Error(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
-        xlabel('Time(Day)')
+        xlabel('Time(Day As Unit)')
 		ylabel('Relative Error(%)')
+        
         % 保存图片到文件
-		str = sprintf('TotalUsrNum_PolyFit_Deg-%d', Degree);
-		saveas(Handle, str, 'fig')  % Matlab格式
-		saveas(Handle, str, 'epsc')  % 矢量图
+		str = sprintf('./Pictures/用户总数_%d阶多项式拟合', Degree);
+%		saveas(Handle, str, 'fig')  % Matlab格式
+%		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
 	end
 
@@ -107,14 +108,3 @@ for Degree = 2:DegreeMax
 	str = sprintf('\n');
 	disp(str)
 end
-
-%{
-% 用cftool工具箱更方便。
-disp('用指数函数拟合用户总数随时间变化曲线:')
-% 拟合函数: TtlUsrNum=exp(ExpA + ExpB*DayTh)
-DayThBar = sum(DayTh)/n
-TtlUsrNumLog = log(TtlUsrNum)
-TtlUsrNumLogBar = sum(TtlUsrNumLog)/n
-ExpB = (TtlUsrNumLog*DayThBar' - n*DayThBar*TtlUsrNumLogBar)/(DayTh*DayTh' - n*(DayThBar)^2)
-ExpA = TtlUsrNumLogBar - ExpB*DayThBar
-%}
