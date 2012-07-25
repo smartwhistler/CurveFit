@@ -229,7 +229,7 @@ for Degree = 2:DegreeMax
 	disp(str)
     disp('----------------------------')
     
-    % 2. 
+    % 2.  
     str = sprintf('当取总数据的前0.618部分参与拟合时：\n  拟合的多项式为:\ny =%s', poly2str(ParasGldSct, 'x'));
     disp(str)
     disp('黄金分割线左边的情况是：')
