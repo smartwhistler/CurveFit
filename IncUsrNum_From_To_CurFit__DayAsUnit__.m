@@ -1,4 +1,4 @@
-% 注意, 执行脚本时请修改第6行的参数指向对应的数据文件！！
+% 注意, 执行脚本时请修改第6行的参数指向对应的数据文件！!
 clear, clc;
 format long;
 warning off MATLAB:polyfit:RepeatedPointsOrRescale;
@@ -263,5 +263,5 @@ for Degree = 2:DegreeMax
     disp(str)
     str = sprintf('===========================================================\n\n');
 	disp(str)
-end
+end 
 diary off;
