@@ -13,6 +13,11 @@ else
 	disp(str)
 	return
 end
+if(exist('TotalUserNum_From_To_CurFit_Ver2.log', 'file'))
+    delete('TotalUserNum_From_To_CurFit_Ver2.log');
+end
+diary('TotalUserNum_From_To_CurFit_Ver2.log');
+diary on;
 n = length(TtlUsrNum);
 DataFrom = 200;
 DataTo = 638;
@@ -173,7 +178,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/用户总数_第%d天到第%d天_%d阶曲线拟合_Version2', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/用户总数_第%d天到第%d天_%d阶多项式拟合_(含预测曲线)Version2', DataFrom, DataTo, Degree);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
@@ -245,3 +250,4 @@ for Degree = 2:DegreeMax
     str = sprintf('===========================================================\n\n');
 	disp(str)
 end
+diary off;

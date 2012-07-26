@@ -13,6 +13,11 @@ else
 	disp(str)
 	return
 end
+if(exist('IncUserNum_From_To_CurFit_Ver2__WeekAsUnit__.log', 'file'))
+    delete('IncUserNum_From_To_CurFit_Ver2__WeekAsUnit__.log');
+end
+diary('IncUserNum_From_To_CurFit_Ver2__WeekAsUnit__.log');
+diary on;
 n = length(IncUsrNum);
 DataFrom = 200;
 DataTo = 638;
@@ -56,7 +61,8 @@ Time_WeekAsUnit = 0:0.01:n;
 IncUsrNum = IncUsrNumAlted_WeekAsUnit;
 DayTh = DayTh_WeekAsUnit;
 Time = Time_WeekAsUnit;
-DataTo = floor(DataTo-DataFrom/7)+floor(DataFrom/7);
+DataTo = floor(DataTo/7);
+disp(DataTo)
 DataFrom = floor(DataFrom/7);
 % 预处理结束
 
@@ -202,7 +208,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/新增用户数_第%d天到第%d天_%d阶多项式拟合_Version2', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/新增用户数_第%d周到第%d周_%d阶多项式拟合_Version2', DataFrom, DataTo, Degree);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
@@ -274,3 +280,4 @@ for Degree = 2:DegreeMax
     str = sprintf('===========================================================\n\n');
 	disp(str)
 end
+diary off;

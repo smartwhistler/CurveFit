@@ -13,6 +13,11 @@ else
 	disp(str)
 	return
 end
+if(exist('./TotalUserNum_CurFit.log', 'file'))
+    delete('./TotalUserNum_CurFit.log');
+end
+diary('./TotalUserNum_CurFit.log');
+diary on;
 n = length(TtlUsrNum);
 str = sprintf('从文件 %s 中获取了 %d 个数据', DataFile, n);
 disp(str)
@@ -82,7 +87,7 @@ for Degree = 2:DegreeMax
 		ylabel('Relative Error(%)')
         
         % 保存图片到文件
-		str = sprintf('./Pictures/用户总数_%d阶多项式拟合', Degree);
+		str = sprintf('./Pictures/用户总数_%d阶多项式拟合(仅对原始数据进行拟合)', Degree);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
@@ -108,3 +113,4 @@ for Degree = 2:DegreeMax
 	str = sprintf('\n');
 	disp(str)
 end
+diary off;

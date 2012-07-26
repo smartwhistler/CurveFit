@@ -13,6 +13,11 @@ else
 	disp(str)
 	return
 end
+if(exist('IncUserNum_From_To_CurFit__DayAsUnit__.log', 'file'))
+    delete('IncUserNum_From_To_CurFit__DayAsUnit__.log');
+end
+diary('IncUserNum_From_To_CurFit__DayAsUnit__.log');
+diary on;
 n = length(IncUsrNum);
 DataFrom = 200;
 DataTo = 638;
@@ -259,3 +264,4 @@ for Degree = 2:DegreeMax
     str = sprintf('===========================================================\n\n');
 	disp(str)
 end
+diary off;

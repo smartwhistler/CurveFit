@@ -15,7 +15,7 @@ end
 
 % 原始数据：
 DayTh = 1:length(IncUsrNum);
-Handle = figure('name', '对新增用户数的预处理','position', [80, 0, 1450, 750]);
+Handle = figure('name', '对新增用户数的预处理-(原始数据--对部分点替换后的数据--以星期为单位的数据)','position', [80, 0, 1450, 750]);
 subplot(1, 3, 1);
 plot(DayTh, IncUsrNum, '.');
 title('Original Data'); xlabel('Time(Day As Unit)'); ylabel('Increased Usr Num')
@@ -43,7 +43,7 @@ plot(DayTh_WeekAsUnit, IncUsrNumAlted_WeekAsUnit, '.')
 title('Altered Data(Week As Unit)'); xlabel('Time(Week As Unit)'); ylabel('Increased Usr Num')
 
 % 保存图片到本地文件
-str = sprintf('./Pictures/对新增用户数目的预处理');
+str = sprintf('./Pictures/对新增用户数目的预处理-(原始数据--对部分点替换后的数据--以星期为单位的数据)');
 % saveas(Handle, str, 'fig')  % Matlab格式
 % saveas(Handle, str, 'epsc')  % 矢量图
 saveas(Handle, str, 'png')  % png格式
