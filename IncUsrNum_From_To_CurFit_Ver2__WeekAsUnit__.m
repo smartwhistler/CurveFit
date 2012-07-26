@@ -62,7 +62,6 @@ IncUsrNum = IncUsrNumAlted_WeekAsUnit;
 DayTh = DayTh_WeekAsUnit;
 Time = Time_WeekAsUnit;
 DataTo = floor(DataTo/7);
-disp(DataTo)
 DataFrom = floor(DataFrom/7);
 % 预处理结束
 
@@ -208,7 +207,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/新增用户数_第%d周到第%d周_%d阶多项式拟合_Version2', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/新增用户数_第%d周到第%d周_%d阶多项式拟合_Version2(以周为单位)', DataFrom, DataTo, Degree);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式

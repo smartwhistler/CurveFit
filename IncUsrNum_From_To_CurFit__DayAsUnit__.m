@@ -192,7 +192,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/新增用户数_第%d天到第%d天_%d阶多项式拟合_[以天为单位]', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/新增用户数_第%d天到第%d天_%d阶多项式拟合(以天为单位)', DataFrom, DataTo, Degree);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
