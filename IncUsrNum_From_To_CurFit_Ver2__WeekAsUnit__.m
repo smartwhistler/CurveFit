@@ -63,7 +63,7 @@ IncUsrNum = IncUsrNumAlted_WeekAsUnit;
 DayTh = DayTh_WeekAsUnit;
 Time = Time_WeekAsUnit;
 DataTo = floor(DataTo/7);
-DataFrom = floor(DataFrom/7);
+DataFrom = ceil(DataFrom/7);
 % 预处理结束
 
 
@@ -150,39 +150,39 @@ for Degree = 2:DegreeMax
 		Handle = figure('name', str, 'position', [Left, 0, 1450, 750]);
 		Left = Left+30;
         % 1. 绘制 拟合曲线：
-		subplot(2, 3, 1); plot(DayTh_WeekAsUnit+DataFrom, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
+		subplot(2, 3, 1); plot(DayTh_WeekAsUnit+DataFrom-1, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
 		str = sprintf('Poly Fitting the Num of Inc Usr\n(RSquare=%.10f)', R_Square);
 		title(str)
 		xlabel('Time(Week As Unit)')
 		ylabel('Num of Increased User')
 		% text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
 		hold on
-        plot(Time_WeekAsUnit+DataFrom, FitTime_WeekAsUnit, 'color', 'r')
+        plot(Time_WeekAsUnit+DataFrom-1, FitTime_WeekAsUnit, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
         grid on
         % 绘制拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 3, 4); plot(DayTh_WeekAsUnit+DataFrom, RelErr, 'color', 'r')
+        subplot(2, 3, 4); plot(DayTh_WeekAsUnit+DataFrom-1, RelErr, 'color', 'r')
         str = sprintf('Relative Err\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
         xlabel('Time(Week As Unit)')
 		ylabel('Relative Error(%)')
 
         % 2. 取总数据的前0.618部分参与拟合，生成的 拟合曲线:
-        subplot(2, 3, 2); plot(DayTh_WeekAsUnit+DataFrom, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
+        subplot(2, 3, 2); plot(DayTh_WeekAsUnit+DataFrom-1, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
 		str = sprintf('Poly of GldSct Fitting Num of Inc Usr\n(RSquareGldSctRight=%.7f)', R_SquareGldSct_Right);
 		title(str)
 		xlabel('Time(Week As Unit)')
 		ylabel('Num of Increased User')
 		% text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
         hold on
-        plot(Time_WeekAsUnit+DataFrom, FitTime_WeekAsUnitGldSct, 'color', 'r');
+        plot(Time_WeekAsUnit+DataFrom-1, FitTime_WeekAsUnitGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
         plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom], [0, max(abs(FitDayTh_WeekAsUnitGldSct))], 'color', 'r');
         text(length(DayTh_WeekAsUnitGldSct_Left)-4+DataFrom, max(abs(FitDayTh_WeekAsUnitGldSct))/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 3, 5); plot(DayTh_WeekAsUnit+DataFrom, RelErrGldSct, 'color', 'r')
+        subplot(2, 3, 5); plot(DayTh_WeekAsUnit+DataFrom-1, RelErrGldSct, 'color', 'r')
         hold on
         plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom], [0, max(RelErrGldSct)], 'color', 'r');
         text(length(DayTh_WeekAsUnitGldSct_Left)-4+DataFrom, max(RelErrGldSct)/2, 'Golden Section')
@@ -192,12 +192,12 @@ for Degree = 2:DegreeMax
 		ylabel('Relative Error(%)')
 
         % 3. 将全部数据参与拟合，并作为黄金分割的前0.618部分，相对的后0.382部分作为预测曲线：
-        subplot(2, 3, 3); plot(DayTh_WeekAsUnit+DataFrom, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
+        subplot(2, 3, 3); plot(DayTh_WeekAsUnit+DataFrom-1, IncUsrNumAlted_WeekAsUnit, '.', 'color', 'b', 'MarkerSize', 6)
         title('Preview');
         xlabel('Time(Week As Unit)')
         ylabel('Num of Increased User')
         hold on
-        plot(Time_WeekAsUnit_PrevFollowed+DataFrom, FitTime_WeekAsUnit_PrevFollowed, 'color', 'r')
+        plot(Time_WeekAsUnit_PrevFollowed+DataFrom-1, FitTime_WeekAsUnit_PrevFollowed, 'color', 'r')
         legend('Standard ', 'Preview Followed', 'Location', 'NorthWest')
         hold on
         plot([n+DataFrom, n+DataFrom], [0, max(FitTime_WeekAsUnit_PrevFollowed)], 'color', 'r')
