@@ -61,7 +61,7 @@ plot([n, n], [0, max(100*IncUsrPerc)], 'color', 'r');
 text(n-50, max(100*IncUsrPerc)/2, 'Gold Section');
 legend('Standard ', 'Preview Followed behind the Gold Sect', 'Location', 'NorthEast')
 % 保存图片到文件
-str = sprintf('./Pictures/对新增用户占总用户数的百分比进行拟合(以天为单位)');
+str = sprintf('./Pictures/对新增用户占总用户数的百分比进行拟合(以天为单位,丢弃了前%d天的数据)', DataFrom-1);
 % saveas(Handle, str, 'fig')  % Matlab格式
 % saveas(Handle, str, 'epsc')  % 矢量图
 saveas(Handle, str, 'png')  % png格式
