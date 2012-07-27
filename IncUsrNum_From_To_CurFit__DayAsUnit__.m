@@ -6,7 +6,7 @@ warning off MATLAB:polyfit:RepeatedPointsOrRescale;
 DataFile = '~/Documents/CurveFit/IncUserNum_Sp.dat';
 if((exist(DataFile, 'file'))==2)
 	IncUsrNum = load(DataFile);
-	[PathStr, Name, Ext] = fileparts(DataFile);
+	[PathStr, Name, Ext] = fileparts(DataFile); 
 	cd(PathStr)
 else
 	str = sprintf('数据文件%s不存在，请修改脚本第6行的参数指向对应的数据文件！！', DataFile);
@@ -28,7 +28,7 @@ disp(str)
 n = DataTo-DataFrom+1;
 IncUsrNum = IncUsrNum(DataFrom:DataTo);
 DayTh = 1:n;
-Time = 0:0.01:n;
+Time = 1:0.01:n;
 
 % 对数据进行预处理
 DataAlter = [73, 135, 175, 176, 190, 212, 213, 214, 215, 216, 217, 281, 282, 439, 488, 489, 535, 536, 560, 608, 623, 631, 621];
@@ -86,7 +86,7 @@ for Degree = 2:DegreeMax
     end
 
     % 3. 将全部数据参与拟合获得拟合函数，并作为黄金分割的前0.618部分，相对拟合函数的后0.382部分作为对将来的预测值
-    Time_PrevFollowed = 0:0.001:n/0.618;
+    Time_PrevFollowed = 1:0.01:n/0.618;
     FitTime_PrevFollowed = polyval(Paras, Time_PrevFollowed);
 
 
@@ -134,39 +134,39 @@ for Degree = 2:DegreeMax
 		Handle = figure('name', str, 'position', [Left, 0, 1450, 750]);
 		Left = Left+30;
         % 1. 绘制 拟合曲线：
-		subplot(2, 3, 1); plot(DayTh+DataFrom, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+		subplot(2, 3, 1); plot(DayTh+DataFrom-1, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
 		str = sprintf('Poly Fitting the Num of Inc Usr\n(RSquare=%.10f)', R_Square);
 		title(str)
 		xlabel('Time(Day As Unit)')
 		ylabel('Num of Increased User')
 		% text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
 		hold on
-        plot(Time+DataFrom, FitTime, 'color', 'r')
+        plot(Time+DataFrom-1, FitTime, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
         grid on
         % 绘制拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 3, 4); plot(DayTh+DataFrom, RelErr, 'color', 'r')
+        subplot(2, 3, 4); plot(DayTh+DataFrom-1, RelErr, 'color', 'r')
         str = sprintf('Relative Err\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
         xlabel('Time(Day As Unit)')
 		ylabel('Relative Error(%)')
 
         % 2. 取总数据的前0.618部分参与拟合，生成的 拟合曲线:
-        subplot(2, 3, 2); plot(DayTh+DataFrom, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+        subplot(2, 3, 2); plot(DayTh+DataFrom-1, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
 		str = sprintf('Poly of GldSct Fitting Num of Inc Usr\n(RSquareGldSctRight=%.7f)', R_SquareGldSct_Right);
 		title(str)
 		xlabel('Time(Day As Unit)')
 		ylabel('Num of Increased User')
 		% text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
         hold on
-        plot(Time+DataFrom, FitTimeGldSct, 'color', 'r');
+        plot(Time+DataFrom-1, FitTimeGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
         plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(abs(FitDayThGldSct))], 'color', 'r');
         text(length(DayThGldSct_Left)-40+DataFrom, max(abs(FitDayThGldSct))/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
-        subplot(2, 3, 5); plot(DayTh+DataFrom, RelErrGldSct, 'color', 'r')
+        subplot(2, 3, 5); plot(DayTh+DataFrom-1, RelErrGldSct, 'color', 'r')
         hold on
         plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(RelErrGldSct)], 'color', 'r');
         text(length(DayThGldSct_Left)-40+DataFrom, max(RelErrGldSct)/2, 'Golden Section')
@@ -176,12 +176,12 @@ for Degree = 2:DegreeMax
 		ylabel('Relative Error(%)')
 
         % 3. 将全部数据参与拟合，并作为黄金分割的前0.618部分，相对的后0.382部分作为预测曲线：
-        subplot(2, 3, 3); plot(DayTh+DataFrom, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
+        subplot(2, 3, 3); plot(DayTh+DataFrom-1, IncUsrNum, '.', 'color', 'b', 'MarkerSize', 6)
         title('Preview');
         xlabel('Time(Day As Unit)')
         ylabel('Num of Increased User')
         hold on
-        plot(Time_PrevFollowed+DataFrom, FitTime_PrevFollowed, 'color', 'r')
+        plot(Time_PrevFollowed+DataFrom-1, FitTime_PrevFollowed, 'color', 'r')
         legend('Standard ', 'Preview Followed', 'Location', 'NorthWest')
         hold on
         plot([n+DataFrom, n+DataFrom], [0, max(FitTime_PrevFollowed)], 'color', 'r')

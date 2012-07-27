@@ -19,8 +19,9 @@ end
 diary('IncUserNum_From_To_CurFit_Ver2__WeekAsUnit__.log');
 diary on;
 n = length(IncUsrNum);
-DataFrom = 200;
-DataTo = 638;
+% 从第195天到635天，凑够63个整周
+DataFrom = 195;
+DataTo = 635;
 str = sprintf('从文件 %s 中获取了 %d 个数据, 取其中的 第%d天到第%d天 的数据进行拟合.', DataFile, n, DataFrom, DataTo);
 disp(str)
 
@@ -28,7 +29,7 @@ disp(str)
 n = DataTo-DataFrom+1;
 IncUsrNum = IncUsrNum(DataFrom:DataTo);
 DayTh = 1:n;
-% Time = 0:0.01:n;
+% Time = 1:0.01:n;
 % 多项式拟合的最大阶数:
 DegreeMax = 5;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:
@@ -57,7 +58,7 @@ for i = 1:1:length(DayTh_WeekAsUnit)
 end
 % 已处理过的数据作为待拟合的数据：
 n = length(DayTh_WeekAsUnit);
-Time_WeekAsUnit = 0:0.01:n;
+Time_WeekAsUnit = 1:0.01:n;
 IncUsrNum = IncUsrNumAlted_WeekAsUnit;
 DayTh = DayTh_WeekAsUnit;
 Time = Time_WeekAsUnit;
@@ -101,7 +102,7 @@ for Degree = 2:DegreeMax
     end
 
     % 3. 将全部数据参与拟合获得拟合函数，并作为黄金分割的前0.618部分，相对拟合函数的后0.382部分作为对将来的预测值
-    Time_WeekAsUnit_PrevFollowed = 0:0.001:n/0.618;
+    Time_WeekAsUnit_PrevFollowed = 0:0.01:n/0.618;
     FitTime_WeekAsUnit_PrevFollowed = polyval(Paras, Time_WeekAsUnit_PrevFollowed);
 
 

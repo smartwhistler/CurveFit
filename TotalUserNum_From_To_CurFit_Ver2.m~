@@ -127,7 +127,7 @@ for Degree = 2:DegreeMax
 		ylabel('Num of Total User')
 		% text(10, 5*10^5, strcat('y=', poly2str(Paras, 'x')));
 		hold on
-        plot(Time+DataFrom-1, FitTime, 'color', 'r')
+        plot(Time+DataFrom, FitTime, 'color', 'r')
 		legend('Standard ', 'Fitted', 'Location', 'NorthWest')
         grid on
         % 绘制拟合函数与真实值的 相对误差 随时间变化的曲线:
@@ -145,7 +145,7 @@ for Degree = 2:DegreeMax
 		ylabel('Num of Total User')
 		% text(10, 5*10^5, strcat('y=', poly2str(ParasGldSct, 'x')));
         hold on
-        plot(Time+DataFrom-1, FitTimeGldSct, 'color', 'r');
+        plot(Time+DataFrom, FitTimeGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
         plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(abs(FitDayThGldSct_Right))], 'color', 'r');
@@ -167,7 +167,7 @@ for Degree = 2:DegreeMax
         xlabel('Time(Day As Unit)')
         ylabel('Num of Total User')
         hold on
-        plot(Time_PrevFollowed+DataFrom-1, FitTime_PrevFollowed, 'color', 'r')
+        plot(Time_PrevFollowed+DataFrom, FitTime_PrevFollowed, 'color', 'r')
         legend('Standard ', 'Preview Followed', 'Location', 'NorthWest')
         hold on
         plot([n+DataFrom, n+DataFrom], [0, max(FitTime_PrevFollowed)], 'color', 'r')
