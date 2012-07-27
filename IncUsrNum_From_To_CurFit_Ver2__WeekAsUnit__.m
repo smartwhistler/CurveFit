@@ -66,6 +66,9 @@ DataTo = floor(DataTo/7);
 DataFrom = ceil(DataFrom/7);
 % 预处理结束
 
+tmp = DataFrom;
+DataFrom = 1;
+DataTo = DataTo-tmp+1;
 
 str = sprintf('将依次用 2阶～%d阶的多项式 拟合新增用户数随时间（以星期为单位）变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
 disp(str)
@@ -178,13 +181,13 @@ for Degree = 2:DegreeMax
         plot(Time_WeekAsUnit+DataFrom-1, FitTime_WeekAsUnitGldSct, 'color', 'r');
         legend('Standard ', 'GldSct Fitted', 'Location', 'NorthWest')
         hold on
-        plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom], [0, max(abs(FitDayTh_WeekAsUnitGldSct))], 'color', 'r');
+        plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom-1, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom-1], [0, max(abs(FitDayTh_WeekAsUnitGldSct))], 'color', 'r');
         text(length(DayTh_WeekAsUnitGldSct_Left)-4+DataFrom, max(abs(FitDayTh_WeekAsUnitGldSct))/2, 'Golden Section')
         grid on
         % 取总数据的前0.618部分参与拟合，生成的拟合函数与真实值的 相对误差 随时间变化的曲线:
         subplot(2, 3, 5); plot(DayTh_WeekAsUnit+DataFrom-1, RelErrGldSct, 'color', 'r')
         hold on
-        plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom], [0, max(RelErrGldSct)], 'color', 'r');
+        plot([length(DayTh_WeekAsUnitGldSct_Left)+DataFrom-1, length(DayTh_WeekAsUnitGldSct_Left)+DataFrom-1], [0, max(RelErrGldSct)], 'color', 'r');
         text(length(DayTh_WeekAsUnitGldSct_Left)-4+DataFrom, max(RelErrGldSct)/2, 'Golden Section')
         str = sprintf('Relative Err of GldSct Curving\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
         title(str)
@@ -200,7 +203,7 @@ for Degree = 2:DegreeMax
         plot(Time_WeekAsUnit_PrevFollowed+DataFrom-1, FitTime_WeekAsUnit_PrevFollowed, 'color', 'r')
         legend('Standard ', 'Preview Followed', 'Location', 'NorthWest')
         hold on
-        plot([n+DataFrom, n+DataFrom], [0, max(FitTime_WeekAsUnit_PrevFollowed)], 'color', 'r')
+        plot([n+DataFrom-1, n+DataFrom-1], [0, max(FitTime_WeekAsUnit_PrevFollowed)], 'color', 'r')
         text(n-5+DataFrom, max(FitTime_WeekAsUnit_PrevFollowed)/2, 'Golden Section')
         grid on
         subplot(2, 3, 6);
@@ -208,7 +211,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/新增用户数_第%d周到第%d周_%d阶多项式拟合_Version2(以周为单位)', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/新增用户数_第%d周到第%d周_%d阶多项式拟合_Version2(以周为单位,丢弃了前%d周的数据)', DataFrom, DataTo, Degree, tmp-1);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式

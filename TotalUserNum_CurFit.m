@@ -22,7 +22,7 @@ n = length(TtlUsrNum);
 str = sprintf('从文件 %s 中获取了 %d 个数据', DataFile, n);
 disp(str)
 DayTh = 1:n;
-Time = 0:0.001:n;
+Time = 1:0.001:n;
 % 多项式拟合的最大阶数:
 DegreeMax = 6;
 % R_Square允许的最小值（比此值小的情况将不在终端打印和做图）:

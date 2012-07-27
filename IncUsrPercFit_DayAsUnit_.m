@@ -2,8 +2,8 @@
 clear, clc;
 format long;
 warning off MATLAB:polyfit:RepeatedPointsOrRescale;
-DataFrom = 200;
-DataTo = 638;
+DataFrom = 195;
+DataTo = 635;
 % 提取用户总数数据
 TtlUsrDataFile = '~/Documents/CurveFit/TotalUserNum_Sp.dat';
 if((exist(TtlUsrDataFile, 'file'))==2)
@@ -47,17 +47,18 @@ ParasInc = polyfit(DayTh, IncUsrNumAlted, 2);
 % 计算新增用户占总用户数的百分比的拟合值及预测值
 IncUsrPercPrevDayTh = 1:floor(n/0.618);
 IncusrPercPrev = polyval(ParasInc, IncUsrPercPrevDayTh) ./ polyval(ParasTtl, IncUsrPercPrevDayTh);
+
 % 画图
 Handle = figure('name', '对新增用户占总用户数的百分比进行拟合', 'position', [150, 200, 700, 600]);
-plot(DayTh+DataFrom-1, 100*IncUsrPerc, '.', 'color', 'b');
+plot(DayTh, 100*IncUsrPerc, '.', 'color', 'b');
 ylabel('Percent(%)');
 xlabel('Time(Day)');
 grid on;
 hold on;
-plot(IncUsrPercPrevDayTh+DataFrom-1, 100*IncusrPercPrev, 'color', 'r')
+plot(IncUsrPercPrevDayTh, 100*IncusrPercPrev, 'color', 'r')
 hold on;
-plot([n+DataFrom-1, n+DataFrom-1], [0, max(100*IncUsrPerc)], 'color', 'r');
-text(n+DataFrom-50, max(100*IncUsrPerc)/2, 'Gold Section');
+plot([n, n], [0, max(100*IncUsrPerc)], 'color', 'r');
+text(n-50, max(100*IncUsrPerc)/2, 'Gold Section');
 legend('Standard ', 'Preview Followed behind the Gold Sect', 'Location', 'NorthEast')
 % 保存图片到文件
 str = sprintf('./Pictures/对新增用户占总用户数的百分比进行拟合(以天为单位)');

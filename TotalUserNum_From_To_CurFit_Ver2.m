@@ -19,8 +19,8 @@ end
 diary('TotalUserNum_From_To_CurFit_Ver2.log');
 diary on;
 n = length(TtlUsrNum);
-DataFrom = 200;
-DataTo = 638;
+DataFrom = 195;
+DataTo = 635;
 str = sprintf('从文件 %s 中获取了 %d 个数据, 取其中的 第%d天到第%d天 的数据进行拟合.', DataFile, n, DataFrom, DataTo);
 disp(str)
 % 现在n表示参加拟合的数据总个数:
@@ -36,6 +36,11 @@ R_SquareMin = 0.9;
 % 相对误差允许的最大值：
 RelErrMax = 1000;
 Left = 60;
+
+tmp = DataFrom;
+DataFrom = 1;
+DataTo = DataTo-tmp+1;
+
 
 str = sprintf('将依次用 2阶～%d阶的多项式 拟合用户总数随时间（以天为单位）变化的曲线，并对R_Square大于%.10f的情况做图。\n\n', DegreeMax, R_SquareMin);
 disp(str)
@@ -157,7 +162,7 @@ for Degree = 2:DegreeMax
         plot([length(DayThGldSct_Left)+DataFrom, length(DayThGldSct_Left)+DataFrom], [0, max(RelErrGldSct)], 'color', 'r');
         text(length(DayThGldSct_Left)-40+DataFrom, max(RelErrGldSct)/2, 'Golden Section')
         str = sprintf('Relative Err of GldSct Curving\n(All Rel Errs Bigger then %d is recorded as %d)', RelErrMax, RelErrMax);
-        title(str)
+        title(str);
         xlabel('Time(Day As Unit)')
 		ylabel('Relative Error(%)')
 
@@ -178,7 +183,7 @@ for Degree = 2:DegreeMax
         text(0.01, 0.75, strcat('y=', poly2str(Paras, 'x')));
 
         % 保存图片到文件
-		str = sprintf('./Pictures/用户总数_第%d天到第%d天_%d阶多项式拟合(含预测曲线)Version2', DataFrom, DataTo, Degree);
+		str = sprintf('./Pictures/用户总数_第%d天到第%d天_%d阶多项式拟合(含预测曲线,舍去了前%d天的数据)Version2', DataFrom, DataTo, Degree, tmp-1);
 %		saveas(Handle, str, 'fig')  % Matlab格式
 %		saveas(Handle, str, 'epsc')  % 矢量图
 		saveas(Handle, str, 'png')  % png格式
